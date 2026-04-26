@@ -4,6 +4,7 @@ import com.kapsulesolution.llm.config.LLMProperties;
 import com.kapsulesolution.llm.dto.ChatMessage;
 import com.kapsulesolution.llm.dto.LLMRequest;
 import com.kapsulesolution.llm.dto.LLMResponse;
+import com.kapsulesolution.llm.dto.ResolvedLLMRequest;
 
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,17 @@ public class OpenAIProvider implements LLMProvider {
     }
 
     @Override
-    public LLMResponse call(LLMRequest request) {
+    public LLMResponse call(ResolvedLLMRequest request) {
 
         String url = props.getOpenaiUrl();
 
         Map<String, Object> body = new HashMap<>();
-        body.put("model", "gpt-4o-mini");
+     
+        // model prompt
+        if (request.getModel() != null) {
+        	 body.put("model",request.getModel());
+           
+        }
 
         List<Map<String, String>> messages = new ArrayList<>();
 
@@ -38,7 +44,7 @@ public class OpenAIProvider implements LLMProvider {
                     "content", request.getSystemPrompt()
             ));
         }
-
+      
         // history
         if (request.getHistory() != null) {
             for (ChatMessage msg : request.getHistory()) {
@@ -54,7 +60,9 @@ public class OpenAIProvider implements LLMProvider {
                 "role", "user",
                 "content", request.getUserPrompt()
         ));
-
+;
+        System.out.println("User prompt:" +  request.getUserPrompt());
+        
         body.put("messages", messages);
 
         // temperature fallback
@@ -66,6 +74,8 @@ public class OpenAIProvider implements LLMProvider {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(props.getOpenaiApiKey());
+        System.out.print("Open AI APi Key:" + props.getOpenaiApiKey());
+        
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, headers);

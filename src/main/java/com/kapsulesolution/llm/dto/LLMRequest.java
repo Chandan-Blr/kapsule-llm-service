@@ -9,6 +9,7 @@ public class LLMRequest {
     private List<ChatMessage> history;
     private Double temperature;
     private String provider;
+    private String model;
 
     public String getSystemPrompt() {
         return systemPrompt;
@@ -49,4 +50,13 @@ public class LLMRequest {
     public void setProvider(String provider) {
         this.provider = provider;
     }
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
+	}
+    
 }
