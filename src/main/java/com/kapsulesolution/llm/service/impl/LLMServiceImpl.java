@@ -26,21 +26,20 @@ public class LLMServiceImpl implements LLMService {
     @Override
     public LLMResponse interpret(LLMRequest request) {
 
-        // ✅ Resolve request (IMPORTANT)
-        ResolvedLLMRequest resolved = resolve(request);
+        // Step 1: resolve provider first
+        String providerName = (request.getProvider() != null && !request.getProvider().isBlank())
+                ? request.getProvider()
+                : props.getDefaultProvider();
 
-        // ✅ Use resolved provider
-        LLMProvider provider = factory.getProvider(resolved.getProvider());
+        LLMProvider provider = factory.getProvider(providerName);
 
-        if (provider == null) {
-            throw new RuntimeException("Invalid LLM provider: " + resolved.getProvider());
-        }
+        // Step 2: resolve final request using provider defaults
+        ResolvedLLMRequest resolved = resolve(request, provider);
 
-        // ✅ Call provider with resolved request
         return provider.call(resolved);
     }
 
-    private ResolvedLLMRequest resolve(LLMRequest req) {
+    private ResolvedLLMRequest resolve(LLMRequest req, LLMProvider provider) {
 
         if (req == null) {
             throw new IllegalArgumentException("Request cannot be null");
@@ -50,6 +49,10 @@ public class LLMServiceImpl implements LLMService {
             throw new IllegalArgumentException("userPrompt is required");
         }
 
+        String model = (req.getModel() != null && !req.getModel().isBlank())
+                ? req.getModel()
+                : provider.getDefaultModel(); // KEY CHANGE
+
         return new ResolvedLLMRequest(
 
                 // systemPrompt
@@ -57,7 +60,7 @@ public class LLMServiceImpl implements LLMService {
                         ? req.getSystemPrompt()
                         : "You are a helpful assistant",
 
-                // userPrompt (mandatory)
+                // userPrompt
                 req.getUserPrompt(),
 
                 // history
@@ -65,20 +68,16 @@ public class LLMServiceImpl implements LLMService {
                         ? req.getHistory()
                         : new ArrayList<>(),
 
-                // temperature (FIXED TYPE)
+                // temperature
                 req.getTemperature() != null
                         ? req.getTemperature()
                         : props.getDefaultTemperature(),
 
                 // provider
-                (req.getProvider() != null && !req.getProvider().isBlank())
-                        ? req.getProvider()
-                        : props.getDefaultProvider(),
+                provider.getName(),
 
                 // model
-                (req.getModel() != null && !req.getModel().isBlank())
-                        ? req.getModel()
-                        : "gpt-4o-mini"
+                model
         );
     }
 }

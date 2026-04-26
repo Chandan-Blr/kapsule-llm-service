@@ -11,6 +11,7 @@ public class LLMProperties {
     private Double defaultTemperature = 0.7;
     private String openaiApiKey;
     private String openaiUrl = "https://api.openai.com/v1/chat/completions";
+    private String ollamaUrl = "http://localhost:11434/api/generate";
 
     public String getDefaultProvider() {
         return defaultProvider;
@@ -43,4 +44,13 @@ public class LLMProperties {
     public void setOpenaiUrl(String openaiUrl) {
         this.openaiUrl = openaiUrl;
     }
+
+	public String getOllamaUrl() {
+		return ollamaUrl;
+	}
+
+	public void setOllamaUrl(String ollamaUrl) {
+		this.ollamaUrl = ollamaUrl;
+	}
+    
 }

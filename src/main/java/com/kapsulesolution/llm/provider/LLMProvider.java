@@ -4,5 +4,10 @@ import com.kapsulesolution.llm.dto.LLMResponse;
 import com.kapsulesolution.llm.dto.ResolvedLLMRequest;
 
 public interface LLMProvider {
-  LLMResponse call(ResolvedLLMRequest paramLLMRequest);
+	
+	String getDefaultModel();
+	
+	String getName();
+	
+	LLMResponse call(ResolvedLLMRequest paramLLMRequest);
 }

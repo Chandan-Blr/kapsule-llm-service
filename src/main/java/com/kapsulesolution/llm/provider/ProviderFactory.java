@@ -19,13 +19,16 @@ public class ProviderFactory {
     public LLMProvider getProvider(String name) {
 
         String providerName = (name != null && !name.isBlank())
-                ? name
-                : props.getDefaultProvider();
+                ? name.toLowerCase()
+                : props.getDefaultProvider().toLowerCase();
 
         LLMProvider provider = providers.get(providerName);
 
         if (provider == null) {
-            throw new RuntimeException("LLM Provider not found: " + providerName);
+            throw new RuntimeException(
+                "LLM Provider not found: " + providerName +
+                ". Available: " + providers.keySet()
+            );
         }
 
         return provider;

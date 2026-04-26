@@ -21,6 +21,16 @@ public class OpenAIProvider implements LLMProvider {
     public OpenAIProvider(LLMProperties props) {
         this.props = props;
     }
+    
+    @Override
+    public String getName() {
+        return "openai";
+    }
+
+    @Override
+    public String getDefaultModel() {
+        return "gpt-4o-mini";
+    }
 
     @Override
     public LLMResponse call(ResolvedLLMRequest request) {
